@@ -2,6 +2,7 @@
 
 
 #include "WorldPosition.h"
+#include "GameFramework/Actor.h"
 
 // Sets default values for this component's properties
 UWorldPosition::UWorldPosition()
@@ -19,7 +20,30 @@ void UWorldPosition::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp,Warning,TEXT("Message"));
+	FString Log = TEXT("Hola");
+	FString* PtrLog = &Log;
+
+
+	//UE_LOG(LogTemp,Warning,TEXT("%s"),**PtrLog);
+	
+
+	/*int32 longitudCadena = Log.Len();
+	int32 longitudCadena2 = (*PtrLog).Len();
+	int32 longitudCadena3 = PtrLog -> Len();
+	UE_LOG(LogTemp,Warning,TEXT("%d"),longitudCadena);
+	UE_LOG(LogTemp,Warning,TEXT("%d"),longitudCadena2);
+	UE_LOG(LogTemp,Warning,TEXT("%d"),longitudCadena3);*/
+	
+	
+	/*FString Log = TEXT("Hola");
+	UE_LOG(LogTemp,Warning,TEXT("%s"),*Log);*/
+
+	
+	/*UE_LOG(LogTemp,Warning,TEXT("Message"));
+	UE_LOG(LogTemp,Error,TEXT("Error"));
+	UE_LOG(LogTemp,Display,TEXT("informacion"));*/
+	
+	UE_LOG(LogTemp,Warning,TEXT("%s"),*GetOwner()->GetActorLocation().ToString());
 	
 }
 
