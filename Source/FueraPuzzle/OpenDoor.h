@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
 
@@ -19,6 +20,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	void OpenDoor(float DeltaTime);
 
 public:	
 	// Called every frame
@@ -29,5 +31,9 @@ private:
 	float TargetYaw;
 	UPROPERTY(EditAnywhere)
 	float DoorSpeed = 2;
+	UPROPERTY(EditAnywhere)
+	ATriggerVolume* pressurePlate;
+	UPROPERTY(EditAnywhere)
+	AActor* ActorThatOpenDoor;
 		
 };

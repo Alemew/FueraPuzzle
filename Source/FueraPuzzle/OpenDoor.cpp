@@ -2,6 +2,8 @@
 
 
 #include "OpenDoor.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 
 
 
@@ -26,6 +28,11 @@ void UOpenDoor::BeginPlay()
 	//GetOwner() -> SetActorRotation(FRotator(0,-90,0));
 	
 	TargetYaw = RotationYaw + GetOwner()->GetActorRotation().Yaw;
+
+	if (!ActorThatOpenDoor)
+	{
+		ActorThatOpenDoor = GetWorld()->GetFirstPlayerController()->GetPawn();
+	}
 	
 }
 
@@ -34,13 +41,21 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (pressurePlate->IsOverlappingActor(ActorThatOpenDoor))
+	{
+		OpenDoor(DeltaTime);
+	}
+}
 
-	UE_LOG(LogTemp, Warning, TEXT("%s"),*GetOwner()->GetActorRotation().ToString());
-	UE_LOG(LogTemp, Warning, TEXT("Yaw is: %f"),GetOwner()->GetActorRotation().Yaw);
+void UOpenDoor::OpenDoor(float DeltaTime)
+{
+	/*UE_LOG(LogTemp, Warning, TEXT("%s"),*GetOwner()->GetActorRotation().ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Yaw is: %f"),GetOwner()->GetActorRotation().Yaw);*/
 	
 	float nextStepYaw = FMath::FInterpTo(GetOwner()->GetActorRotation().Yaw,TargetYaw,DeltaTime,DoorSpeed);
 
 	FRotator Rotation90Yaw(0.f,nextStepYaw,0.f);
 	GetOwner()->SetActorRotation(Rotation90Yaw);
 }
+
 
