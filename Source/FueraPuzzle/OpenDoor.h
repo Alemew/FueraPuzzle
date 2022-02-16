@@ -16,11 +16,13 @@ class FUERAPUZZLE_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
+	
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	void OpenDoor(float DeltaTime);
+	void CloseDoor(float DeltaTime);
 
 public:	
 	// Called every frame
@@ -29,11 +31,21 @@ private:
 	UPROPERTY(EditAnywhere)
 	float RotationYaw = -90;
 	float TargetYaw;
+	float InitialYaw;
+	
 	UPROPERTY(EditAnywhere)
-	float DoorSpeed = 2;
+	float OpenSpeed = 2;
+	UPROPERTY(EditAnywhere)
+	float CloseSpeed = 2;
+	
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* pressurePlate;
+	
 	UPROPERTY(EditAnywhere)
 	AActor* ActorThatOpenDoor;
+	
+	UPROPERTY(EditAnywhere)
+	float ClosingDelay = 2;
+	float InitialTimeOpening;
 		
 };
