@@ -22,19 +22,8 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (! PhysicsHandle)
-	{
-		UE_LOG(LogTemp,Error,TEXT("No se encuentra el Physics Handle Component dentro de %s"),*GetOwner()->GetName());
-	}
-	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
-	if (InputComponent)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OK ---> Se ha encontrado el componente dentro de %s"), *GetOwner()->GetName());
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("No se encuentra el UInputComponent dentro de %s"), *GetOwner()->GetName());
-	}
+	FindPhysicsHandle();
+	SetupInputComponent();
 	
 }
 
@@ -43,64 +32,86 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	//Obtener el ViewPort de DefaultPawn_BP
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerPosition,PlayerRotation);
-	//UE_LOG(LogTemp, Warning, TEXT("%s"),*PlayerPosition.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("%s"),*PlayerRotation.ToString());
-
-	// Dibujar una linea desde el jugador hasta un metro hacia donde mire
-
-	//FVector LineTraceEnd = PlayerPosition + FVector(0.f,0.f,100.f);
-	LineTraceEnd = PlayerPosition + PlayerRotation.Vector()*Reach;
-
-	DrawDebugLine(
-		GetWorld(),
-		PlayerPosition,
-		LineTraceEnd,
-		FColor(50, 157, 168),
-		false,
-		0.f,
-		0,
-		5.f);
-
-	//Ray-Cast hasta una determinada distancia (reach)
 	
-	
-
-	InputComponent->BindAction(
-		"Grab",
-		IE_Pressed,
-		this,
-		&UGrabber::Grab);
-	
-	
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->SetTargetLocation(GetPlayerReach());
+	}
 	
 }
 
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab action"));
-
-	FCollisionQueryParams TraceParams(FName(""),false,GetOwner());
-
-	bool HasImpacted = GetWorld()->LineTraceSingleByObjectType(
-		Hit,
-		PlayerPosition,
-		LineTraceEnd,
-		FCollisionObjectQueryParams(ECC_PhysicsBody),
-		TraceParams);
-	
-	//Comprobar que alcanzamos con el Ray-Cast
-
-	if (HasImpacted)
+	//Posible problema con hit añadir una nueva variable en vez de usar Hit
+	Hit = GetFirstPhysicsBodyInReach();
+	if (Hit.GetActor())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"),*Hit.GetActor()->GetName());
+		UE_LOG(LogTemp,Warning,TEXT("Estas mirando a %s"),*Hit.GetActor()->GetName());
+		UPrimitiveComponent* ComponentToGrab = Hit.GetComponent();
+		PhysicsHandle->GrabComponentAtLocation(ComponentToGrab,NAME_None,GetPlayerReach());
 	}
 }
 
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Release action"));
-	//TODO
+	PhysicsHandle->ReleaseComponent();
+}
+
+void UGrabber::FindPhysicsHandle()
+{
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (! PhysicsHandle)
+	{
+		UE_LOG(LogTemp,Error,TEXT("No se encuentra el Physics Handle Component dentro de %s"),*GetOwner()->GetName());
+	}
+}
+
+void UGrabber::SetupInputComponent()
+{
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (InputComponent)
+	{
+		
+		InputComponent->BindAction("Grab",IE_Pressed,this,&UGrabber::Grab);
+	
+		InputComponent->BindAction("Grab",IE_Released,this,&UGrabber::Release);
+	}
+	
+}
+
+FHitResult UGrabber::GetFirstPhysicsBodyInReach()
+{
+	
+	FCollisionQueryParams TraceParams(FName(""),false,GetOwner());
+
+	//Comprobamos que alcanzamos con el raycast
+	GetWorld()->LineTraceSingleByObjectType(
+		Hit,
+		PlayerPosition,
+		GetPlayerReach(),
+		FCollisionObjectQueryParams(ECC_PhysicsBody),
+		TraceParams);
+
+	AActor* ActorHit = Hit.GetActor();
+	
+	//Actor con el que choca el Ray-Cast
+
+	/*if (ActorHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"),*ActorHit->GetName());
+	}*/
+
+	return Hit;
+}
+
+FVector UGrabber::GetPlayerReach()
+{
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerPosition,PlayerRotation);
+
+	//Vector hasta el objeto que este a una determinada distancia
+	LineTraceEnd = PlayerPosition + PlayerRotation.Vector()*Reach;
+
+	return  LineTraceEnd;
 }

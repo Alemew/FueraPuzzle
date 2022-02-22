@@ -23,6 +23,7 @@ protected:
 	virtual void BeginPlay() override;
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
+	void TotalMassOfActorsInVolume();
 
 public:	
 	// Called every frame
@@ -42,7 +43,7 @@ private:
 	ATriggerVolume* pressurePlate;
 	
 	UPROPERTY(EditAnywhere)
-	AActor* ActorThatOpenDoor;
+	float OpeningMass;
 	
 	UPROPERTY(EditAnywhere)
 	float ClosingDelay = 2;

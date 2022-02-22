@@ -28,11 +28,6 @@ void UOpenDoor::BeginPlay()
 	//GetOwner() -> SetActorRotation(FRotator(0,-90,0));
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	TargetYaw = RotationYaw + InitialYaw;
-
-	if (!ActorThatOpenDoor)
-	{
-		ActorThatOpenDoor = GetWorld()->GetFirstPlayerController()->GetPawn();
-	}
 	
 }
 
@@ -41,7 +36,8 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (pressurePlate->IsOverlappingActor(ActorThatOpenDoor))
+	
+	/*if (pressurePlate && TotalMassOfActorsInVolume() > OpeningMass)
 	{
 		OpenDoor(DeltaTime);
 		InitialTimeOpening = GetWorld()->GetTimeSeconds();
@@ -49,7 +45,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	if (InitialTimeOpening < GetWorld()->GetTimeSeconds() - ClosingDelay)
 	{
 		CloseDoor(DeltaTime);
-	}
+	}*/
 }
 
 void UOpenDoor::OpenDoor(float DeltaTime)
@@ -69,6 +65,11 @@ void UOpenDoor::CloseDoor(float DeltaTime)
 
 	FRotator Rotation90Yaw(0.f,nextStepYaw,0.f);
 	GetOwner()->SetActorRotation(Rotation90Yaw);
+}
+
+void UOpenDoor::TotalMassOfActorsInVolume()
+{
+	
 }
 
 
