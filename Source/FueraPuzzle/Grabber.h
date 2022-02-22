@@ -20,6 +20,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	void Grab();
+	void Release();
 
 public:	
 	// Called every frame
@@ -33,5 +35,6 @@ private:
 	float Reach = 100.f;
 
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UInputComponent* InputComponent = nullptr;
 		
 };

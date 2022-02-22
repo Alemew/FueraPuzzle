@@ -27,6 +27,14 @@ void UGrabber::BeginPlay()
 	{
 		UE_LOG(LogTemp,Error,TEXT("No se encuentra el Physics Handle Component dentro de %s"),*GetOwner()->GetName());
 	}
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (InputComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OK ---> Se ha encontrado el componente dentro de %s"), *GetOwner()->GetName());
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("No se encuentra el UInputComponent dentro de %s"), *GetOwner()->GetName());
+	}
 	
 }
 
@@ -58,10 +66,24 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	//Ray-Cast hasta una determinada distancia (reach)
 	
+	
+
+	InputComponent->BindAction(
+		"Grab",
+		IE_Pressed,
+		this,
+		&UGrabber::Grab);
+	
+	
+	
+}
+
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab action"));
+
 	FCollisionQueryParams TraceParams(FName(""),false,GetOwner());
 
-	
-	
 	bool HasImpacted = GetWorld()->LineTraceSingleByObjectType(
 		Hit,
 		PlayerPosition,
@@ -75,6 +97,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s"),*Hit.GetActor()->GetName());
 	}
-	
 }
 
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Release action"));
+	//TODO
+}
