@@ -26,9 +26,6 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//FRotator currentRotation = GetOwner()-> GetActorRotation();
-	//UE_LOG(LogTemp, Warning, TEXT("%s"),*currentRotation.ToString());
-	//GetOwner() -> SetActorRotation(FRotator(0,-90,0));
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	TargetYaw = RotationYaw + InitialYaw;
 	
@@ -53,8 +50,6 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
-	/*UE_LOG(LogTemp, Warning, TEXT("%s"),*GetOwner()->GetActorRotation().ToString());
-	UE_LOG(LogTemp, Warning, TEXT("Yaw is: %f"),GetOwner()->GetActorRotation().Yaw);*/
 	
 	float nextStepYaw = FMath::FInterpTo(GetOwner()->GetActorRotation().Yaw,TargetYaw,DeltaTime,OpenSpeed);
 
@@ -70,17 +65,23 @@ void UOpenDoor::CloseDoor(float DeltaTime)
 	GetOwner()->SetActorRotation(Rotation90Yaw);
 }
 
-float UOpenDoor::TotalMassOfActorsInVolume()
+float UOpenDoor::TotalMassOfActorsInVolume() const
 {
 	float TotalMass = 0.f;
-	TArray<AActor*> Actors;
+	TArray<AActor*> OverlappingActors;
 
-	pressurePlate->GetOverlappingActors(OUT Actors);
-
-	for (const auto* Actor : Actors)
+	if (pressurePlate)
 	{
-		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
-		UE_LOG(LogTemp, Warning, TEXT("%s is on the plate."), *Actor->GetName())
+		pressurePlate->GetOverlappingActors(OverlappingActors);
+	}
+
+	for (AActor* Actor : OverlappingActors)
+	{
+		UPrimitiveComponent* PrimitiveComponent = Actor->FindComponentByClass<UPrimitiveComponent>();
+		if (PrimitiveComponent)
+		{
+			TotalMass += PrimitiveComponent->GetMass();
+		}
 	}
 
 	return TotalMass;

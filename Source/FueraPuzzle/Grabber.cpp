@@ -33,7 +33,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if (PhysicsHandle->GrabbedComponent)
+	if (PhysicsHandle && PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(GetPlayerReach());
 	}
@@ -49,14 +49,21 @@ void UGrabber::Grab()
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Estas mirando a %s"),*Hit.GetActor()->GetName());
 		UPrimitiveComponent* ComponentToGrab = Hit.GetComponent();
-		PhysicsHandle->GrabComponentAtLocation(ComponentToGrab,NAME_None,GetPlayerReach());
+		if (PhysicsHandle)
+		{
+			PhysicsHandle->GrabComponentAtLocation(ComponentToGrab,NAME_None,GetPlayerReach());
+		}
 	}
 }
 
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Release action"));
-	PhysicsHandle->ReleaseComponent();
+	if (PhysicsHandle)
+	{
+		PhysicsHandle->ReleaseComponent();
+	}
+	
 }
 
 void UGrabber::FindPhysicsHandle()
@@ -96,13 +103,6 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 
 	AActor* ActorHit = Hit.GetActor();
 	
-	//Actor con el que choca el Ray-Cast
-
-	/*if (ActorHit)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"),*ActorHit->GetName());
-	}*/
-
 	return Hit;
 }
 
