@@ -23,7 +23,7 @@ protected:
 	virtual void BeginPlay() override;
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
-	void TotalMassOfActorsInVolume();
+	float TotalMassOfActorsInVolume();
 
 public:	
 	// Called every frame
