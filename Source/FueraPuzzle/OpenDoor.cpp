@@ -27,12 +27,13 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitialYaw = GetOwner()->GetActorRotation().Yaw;
+	
 	TargetYaw = RotationYaw + InitialYaw;
 
 	DoorSound = GetOwner()->FindComponentByClass<UAudioComponent>();
 	pressurePlate = GetOwner()->FindComponentByClass<UBoxComponent>();
 	DoorMesh = Cast<UMeshComponent>(GetOwner()->GetDefaultSubobjectByName(DOOR_MESH_NAME));
+	InitialYaw = DoorMesh->GetComponentRotation().Yaw;
 	
 }
 
