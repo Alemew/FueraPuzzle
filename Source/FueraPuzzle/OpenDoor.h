@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Engine/TriggerVolume.h"
+#include "Components/BoxComponent.h"
 #include "OpenDoor.generated.h"
 
 
@@ -40,7 +40,7 @@ private:
 	float CloseSpeed = 2;
 	
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume* pressurePlate = nullptr;
+	UBoxComponent* pressurePlate = nullptr;
 	
 	UPROPERTY(EditAnywhere)
 	float OpeningMass;
@@ -48,5 +48,13 @@ private:
 	UPROPERTY(EditAnywhere)
 	float ClosingDelay = 2;
 	float InitialTimeOpening;
-		
+	UAudioComponent* DoorSound = nullptr;
+	bool IsDoorOpened = true;
+	UPROPERTY(EditAnywhere)
+	USoundBase* OpenSound = nullptr;
+	UPROPERTY(EditAnywhere)
+	USoundBase* CloseSound = nullptr;
+	UMeshComponent* DoorMesh = nullptr;
+	UPROPERTY(EditAnywhere)
+	FName DOOR_MESH_NAME = "S_DOOR";
 };

@@ -5,6 +5,7 @@
 
 #include <Actor.h>
 
+#include "Components/AudioComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 
@@ -28,6 +29,10 @@ void UOpenDoor::BeginPlay()
 
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	TargetYaw = RotationYaw + InitialYaw;
+
+	DoorSound = GetOwner()->FindComponentByClass<UAudioComponent>();
+	pressurePlate = GetOwner()->FindComponentByClass<UBoxComponent>();
+	DoorMesh = Cast<UMeshComponent>(GetOwner()->GetDefaultSubobjectByName(DOOR_MESH_NAME));
 	
 }
 
@@ -40,29 +45,43 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	if (pressurePlate && TotalMassOfActorsInVolume() > OpeningMass)
 	{
 		OpenDoor(DeltaTime);
+		
 		InitialTimeOpening = GetWorld()->GetTimeSeconds();
 	}
 	if (InitialTimeOpening < GetWorld()->GetTimeSeconds() - ClosingDelay)
 	{
 		CloseDoor(DeltaTime);
+		
 	}
 }
 
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
 	
-	float nextStepYaw = FMath::FInterpTo(GetOwner()->GetActorRotation().Yaw,TargetYaw,DeltaTime,OpenSpeed);
+	float nextStepYaw = FMath::FInterpTo(DoorMesh->GetComponentRotation().Yaw,TargetYaw,DeltaTime,OpenSpeed);
 
 	FRotator Rotation90Yaw(0.f,nextStepYaw,0.f);
-	GetOwner()->SetActorRotation(Rotation90Yaw);
+	DoorMesh->SetWorldRotation(Rotation90Yaw);
+	if (DoorSound && IsDoorOpened)
+	{
+		DoorSound->SetSound(OpenSound);
+		DoorSound->Play();
+		IsDoorOpened = false;
+	}
 }
 
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
-	float nextStepYaw = FMath::FInterpTo(GetOwner()->GetActorRotation().Yaw,InitialYaw,DeltaTime,CloseSpeed);
+	float nextStepYaw = FMath::FInterpTo(DoorMesh->GetComponentRotation().Yaw,InitialYaw,DeltaTime,CloseSpeed);
 
 	FRotator Rotation90Yaw(0.f,nextStepYaw,0.f);
-	GetOwner()->SetActorRotation(Rotation90Yaw);
+	DoorMesh->SetWorldRotation(Rotation90Yaw);
+	if (DoorSound && !IsDoorOpened)
+	{
+		DoorSound->SetSound(CloseSound);
+		DoorSound->Play();
+		IsDoorOpened = true;
+	}
 }
 
 float UOpenDoor::TotalMassOfActorsInVolume() const
