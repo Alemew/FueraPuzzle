@@ -56,5 +56,5 @@ private:
 	USoundBase* CloseSound = nullptr;
 	UMeshComponent* DoorMesh = nullptr;
 	UPROPERTY(EditAnywhere)
-	FName DOOR_MESH_NAME = "S_DOOR";
+	FName DOOR_MESH_NAME = "S_Door";
 };

@@ -74,7 +74,7 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
 	float nextStepYaw = FMath::FInterpTo(DoorMesh->GetComponentRotation().Yaw,InitialYaw,DeltaTime,CloseSpeed);
-
+	//UE_LOG(LogTemp, Warning, TEXT("closeDoor"));
 	FRotator Rotation90Yaw(0.f,nextStepYaw,0.f);
 	DoorMesh->SetWorldRotation(Rotation90Yaw);
 	if (DoorSound && !IsDoorOpened)
@@ -97,11 +97,15 @@ float UOpenDoor::TotalMassOfActorsInVolume() const
 
 	for (AActor* Actor : OverlappingActors)
 	{
-		UPrimitiveComponent* PrimitiveComponent = Actor->FindComponentByClass<UPrimitiveComponent>();
-		if (PrimitiveComponent)
+		if (Actor->ActorHasTag("DoorOpener"))
 		{
-			TotalMass += PrimitiveComponent->GetMass();
+			UPrimitiveComponent* PrimitiveComponent = Actor->FindComponentByClass<UPrimitiveComponent>();
+			if (PrimitiveComponent)
+			{
+				TotalMass += PrimitiveComponent->GetMass();
+			}
 		}
+		
 	}
 
 	return TotalMass;
