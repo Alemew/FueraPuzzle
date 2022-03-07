@@ -61,7 +61,7 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 	
 	float nextStepYaw = FMath::FInterpTo(DoorMesh->GetComponentRotation().Yaw,TargetYaw,DeltaTime,OpenSpeed);
 
-	FRotator Rotation90Yaw(0.f,nextStepYaw,0.f);
+	FRotator Rotation90Yaw(DoorMesh->GetComponentRotation().Pitch,nextStepYaw,DoorMesh->GetComponentRotation().Roll);
 	DoorMesh->SetWorldRotation(Rotation90Yaw);
 	if (DoorSound && IsDoorOpened)
 	{
@@ -75,7 +75,7 @@ void UOpenDoor::CloseDoor(float DeltaTime)
 {
 	float nextStepYaw = FMath::FInterpTo(DoorMesh->GetComponentRotation().Yaw,InitialYaw,DeltaTime,CloseSpeed);
 	//UE_LOG(LogTemp, Warning, TEXT("closeDoor"));
-	FRotator Rotation90Yaw(0.f,nextStepYaw,0.f);
+	FRotator Rotation90Yaw(DoorMesh->GetComponentRotation().Pitch,nextStepYaw,DoorMesh->GetComponentRotation().Roll);
 	DoorMesh->SetWorldRotation(Rotation90Yaw);
 	if (DoorSound && !IsDoorOpened)
 	{
