@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/BoxComponent.h"
@@ -57,4 +59,6 @@ private:
 	UMeshComponent* DoorMesh = nullptr;
 	UPROPERTY(EditAnywhere)
 	FName DOOR_MESH_NAME = "S_Door";
+	UPROPERTY(EditAnywhere)
+	FName Tag = "openDoor";
 };

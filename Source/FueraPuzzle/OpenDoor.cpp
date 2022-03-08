@@ -97,7 +97,7 @@ float UOpenDoor::TotalMassOfActorsInVolume() const
 
 	for (AActor* Actor : OverlappingActors)
 	{
-		if (Actor->ActorHasTag("DoorOpener")|| Actor->FindComponentByClass<UPrimitiveComponent>()->ComponentHasTag("DoorOpener"))
+		if (Actor->ActorHasTag(Tag)|| Actor->FindComponentByClass<UPrimitiveComponent>()->ComponentHasTag(Tag))
 		{
 			UPrimitiveComponent* PrimitiveComponent = Actor->FindComponentByClass<UPrimitiveComponent>();
 			if (PrimitiveComponent)
